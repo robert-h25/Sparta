@@ -17,7 +17,7 @@ public class Inventory {
     }
 
     public List<WebElement> getProducts() {
-        return webDriver.findElements(productItems);
+        return webDriver.findElements(this.productItems);
     }
 
     public int getProductCount() {
