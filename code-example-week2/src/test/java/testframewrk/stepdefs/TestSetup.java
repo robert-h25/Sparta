@@ -52,7 +52,7 @@ public class TestSetup {
         webDriver.quit();
     }
 
-    static Website getWebsite(String url) {
+    public static Website getWebsite(String url) {
         webDriver.get(url);
         return new Website(webDriver);
     }

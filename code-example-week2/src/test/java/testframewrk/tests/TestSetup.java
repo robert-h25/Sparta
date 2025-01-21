@@ -19,8 +19,8 @@ public class TestSetup {
 
     private static ChromeDriverService service;
 
-    public WebDriver webDriver;
-    public Website website;
+    public static WebDriver webDriver;
+    public static Website website;
     public HomePage homePage;
 
     static ChromeOptions getChromeOptions() {
@@ -58,5 +58,10 @@ public class TestSetup {
     @AfterEach
     void afterEach() {
         webDriver.quit();
+    }
+
+    static Website getWebsite(String url) {
+        webDriver.get(url);
+        return new Website(webDriver);
     }
 }

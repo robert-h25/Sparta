@@ -81,4 +81,6 @@ public class POMSwagLabsTests extends TestSetup{
         webDriverWait.until(driver -> driver.getCurrentUrl().contains("/inventory"));
         MatcherAssert.assertThat(webDriver.getCurrentUrl(), Matchers.is("https://www.saucedemo.com/inventory.html"));
     }
+
+
 }

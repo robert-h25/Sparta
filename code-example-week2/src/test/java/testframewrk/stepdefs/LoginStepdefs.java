@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class LoginStepdefs {
 
-    private Website website;
+    public Website website;
     private static final String BASE_URL = "https://www.saucedemo.com/";
 
     @Before
