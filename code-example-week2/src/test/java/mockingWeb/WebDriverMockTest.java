@@ -1,38 +1,81 @@
 package mockingWeb;
 
+
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 
-public class WebDriverMockTest {
+class WebDriverMockTest {
+
     private WebDriver mockWebDriver;
     private WebElement mockWebElement;
-    private HomePage homePage;
+    private HomePage mockHomePage;
+    private Website mockWebsite;
+    private WebElement mockUsernameField;
+    private WebElement mockPasswordField;
+    private WebElement mockLoginButton;
 
     @BeforeEach
     void setUp() {
-        // Mock WebDriver and WebElement
         mockWebDriver = mock(WebDriver.class);
         mockWebElement = mock(WebElement.class);
+        mockHomePage = new HomePage(mockWebDriver);
+        mockUsernameField = mock(WebElement.class);
+        mockPasswordField = mock(WebElement.class);
+        mockLoginButton = mock(WebElement.class);
+        mockWebsite = new Website(mockWebDriver);
+    }
 
-        // Initialize HomePage with mocked WebDriver
-        homePage = new HomePage(mockWebDriver);
+    private void login(String username, String password) {
+
+        mockHomePage.enterUsername(username);
+        mockHomePage.enterPassword(password);
+        mockHomePage.clickLoginButton();
+    }
+
+    private void mockElements(){
+        when(mockWebDriver.findElement(By.name("user-name"))).thenReturn(mockUsernameField);
+        when(mockWebDriver.findElement(By.name("password"))).thenReturn(mockPasswordField);
+        when(mockWebDriver.findElement(By.id("login-button"))).thenReturn(mockLoginButton);
     }
 
     @Test
-    void testEnterUsername() {
+    void successfulLoginTest() {
+
         // Arrange
-        when(mockWebDriver.findElement(By.name("user-name"))).thenReturn(mockWebElement);
+        mockElements();
 
         // Act
-        homePage.enterUsername("mockUser");
+        login("standard_user","secret_sauce");
 
         // Assert
-        verify(mockWebElement).sendKeys("mockUser");
+        verify(mockUsernameField).sendKeys("standard_user");
+        verify(mockPasswordField).sendKeys("secret_sauce");
+        verify(mockLoginButton).click();
+    }
+
+    @Test
+    void unsuccessfulLoginTest(){
+        // Arrange
+        mockElements();
+
+        // Act
+        login("user","sauce");
+
+        // Assert
+        verify(mockUsernameField).sendKeys("user");
+        verify(mockPasswordField).sendKeys("sauce");
+        verify(mockLoginButton).click();
     }
 
     @Test
@@ -42,11 +85,56 @@ public class WebDriverMockTest {
         when(mockWebElement.getText()).thenReturn("Mock Error Message");
 
         // Act
-        String errorMessage = homePage.getErrorMessageText();
+        String errorMessage = mockHomePage.getErrorMessageText();
 
         // Assert
         verify(mockWebDriver).findElement(By.cssSelector("h3[data-test='error']"));
         verify(mockWebElement).getText();
-        assert errorMessage.equals("Mock Error Message");
+        assertThat(errorMessage, containsString("Mock Error Message"));
+    }
+    @Test
+    void testGetCurrentUrl() {
+        // Arrange
+        when(mockWebDriver.getCurrentUrl()).thenReturn("https://www.saucedemo.com/");
+
+        // Act
+        String currentUrl = mockWebsite.getCurrentUrl();
+
+        // Assert
+        verify(mockWebDriver).getCurrentUrl();
+        assert currentUrl.equals("https://www.saucedemo.com/");
+    }
+
+    @Test
+    void testGetPageTitle() {
+        // Arrange
+        when(mockWebDriver.getTitle()).thenReturn("Mock Page Title");
+
+        // Act
+        String pageTitle = mockWebsite.getPageTitle();
+
+        // Assert
+        verify(mockWebDriver).getTitle();
+        assert pageTitle.equals("Mock Page Title");
+    }
+
+    @Test
+    void checkNumberOfProductsOnInventoryPage_WithWait() {
+        String Base_url = "https://www.saucedemo.com/";
+        // Arrange
+        WebDriverWait webDriverWait = new WebDriverWait(mockWebDriver, Duration.ofSeconds(10));
+
+        mockElements();
+
+        when(mockWebDriver.getCurrentUrl()).thenReturn(Base_url);
+        when(mockWebDriver.getCurrentUrl()).thenReturn(Base_url+"inventory");
+
+        // Act
+        login("standard_user", "secret_sauce");
+        webDriverWait.until(driver -> driver.getCurrentUrl().contains("/inventory"));
+
+        // Assert
+        verify(mockWebDriver, times(1)).getCurrentUrl();
+        assertThat(mockWebDriver.getCurrentUrl(), Matchers.is(Base_url+"inventory"));
     }
 }
