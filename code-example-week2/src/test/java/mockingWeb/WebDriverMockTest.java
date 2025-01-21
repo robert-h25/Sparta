@@ -13,6 +13,7 @@ import java.time.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 class WebDriverMockTest {
@@ -24,6 +25,8 @@ class WebDriverMockTest {
     private WebElement mockUsernameField;
     private WebElement mockPasswordField;
     private WebElement mockLoginButton;
+
+    private String Base_url = "https://www.saucedemo.com/";
 
     @BeforeEach
     void setUp() {
@@ -95,14 +98,14 @@ class WebDriverMockTest {
     @Test
     void testGetCurrentUrl() {
         // Arrange
-        when(mockWebDriver.getCurrentUrl()).thenReturn("https://www.saucedemo.com/");
+        when(mockWebDriver.getCurrentUrl()).thenReturn(Base_url);
 
         // Act
         String currentUrl = mockWebsite.getCurrentUrl();
 
         // Assert
         verify(mockWebDriver).getCurrentUrl();
-        assert currentUrl.equals("https://www.saucedemo.com/");
+        assertThat(currentUrl, is(Base_url));
     }
 
     @Test
@@ -115,12 +118,12 @@ class WebDriverMockTest {
 
         // Assert
         verify(mockWebDriver).getTitle();
-        assert pageTitle.equals("Mock Page Title");
+        assertThat(pageTitle, is("Mock Page Title"));
     }
 
     @Test
     void checkNumberOfProductsOnInventoryPage_WithWait() {
-        String Base_url = "https://www.saucedemo.com/";
+
         // Arrange
         WebDriverWait webDriverWait = new WebDriverWait(mockWebDriver, Duration.ofSeconds(10));
 
@@ -135,6 +138,6 @@ class WebDriverMockTest {
 
         // Assert
         verify(mockWebDriver, times(1)).getCurrentUrl();
-        assertThat(mockWebDriver.getCurrentUrl(), Matchers.is(Base_url+"inventory"));
+        assertThat(mockWebDriver.getCurrentUrl(), is(Base_url+"inventory"));
     }
 }
