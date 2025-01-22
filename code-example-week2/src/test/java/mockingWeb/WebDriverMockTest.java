@@ -1,7 +1,5 @@
 package mockingWeb;
 
-
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -26,7 +24,7 @@ class WebDriverMockTest {
     private WebElement mockPasswordField;
     private WebElement mockLoginButton;
 
-    private String Base_url = "https://www.saucedemo.com/";
+    private final String Base_url = "https://www.saucedemo.com/";
 
     @BeforeEach
     void setUp() {
